@@ -1,10 +1,18 @@
 .task-form {
-    margin: 40px 0 10px;
+    margin: 40px 0 20px;
 }
 
 @media (min-width: 540px) {
     .task-form {
-        margin: 80px 0 20px;
+        margin: 80px 0 40px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .task-form {
+        display: flex;
+        align-items: center;
+        gap: 0 10px;
     }
 }
 
@@ -38,4 +46,21 @@
 .task-form__input:focus::placeholder {
     color: #777;
     opacity: 1;
+}
+
+.task-form__submit-btn {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .task-form {
+        margin: 80px 0 40px;
+        display: flex;
+        align-items: center;
+        gap: 0 10px;
+    }
+
+    .task-form__submit-btn {
+        display: inline-block;
+    }
 }

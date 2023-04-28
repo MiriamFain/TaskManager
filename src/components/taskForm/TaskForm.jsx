@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import Button from '../button/Button';
+import { AiOutlinePlus } from 'react-icons/ai';
 import './taskForm.css';
 
 const TaskForm = ({ onAddTask }) => {
@@ -16,11 +18,11 @@ const TaskForm = ({ onAddTask }) => {
         setDescription(event.target.value);
     };
 
-    const handleKeyDown = event => {
-        if (event.key === 'Enter') {
-            handleSubmit(event);
-        }
-    };
+    // const handleKeyUp = event => {
+    //     if (event.key === 'Enter') {
+    //         handleSubmit(event);
+    //     }
+    // };
 
     return (
         <div className="g-col">
@@ -31,11 +33,17 @@ const TaskForm = ({ onAddTask }) => {
                     className="task-form__input"
                     maxLength="64"
                     onChange={handleDescriptionChange}
-                    onKeyUp={handleKeyDown}
+                    // onKeyUp={handleKeyUp}
                     placeholder="What needs to be done?"
                     type="text"
                     value={description}
                 />
+                <Button
+                    type="submit"
+                    className="task-form__submit-btn btn--icon"
+                >
+                    <AiOutlinePlus />
+                </Button>
             </form>
         </div>
     );
