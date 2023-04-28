@@ -4,6 +4,7 @@ import TaskForm from './components/TaskForm';
 import TaskList from './components/TaskList';
 import Header from './components/Header';
 import Notification from './components/PopUp';
+import { BeatLoader } from 'react-spinners';
 import {
     getTasks,
     createTask,
@@ -59,7 +60,11 @@ function App() {
     }, [fetchTasks, page]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="loader-container">
+                <BeatLoader color="#aaa" size={40} />
+            </div>
+        );
     }
 
     if (error) {
@@ -182,11 +187,9 @@ function App() {
                         page={page}
                     />
                     {page < totalPages && (
-                        // <div className="wrapper-btn">
                         <button className="load_more" onClick={handleLoadMore}>
                             Load More
                         </button>
-                        // </div>
                     )}
                 </div>
             </main>

@@ -227,6 +227,12 @@
         gap: 0 10px;
     }
 
+    .btn-list div {
+        display: flex;
+        align-items: center;
+        gap: 0 10px;
+    }
+
     .btn-important,
     .btn-urgent {
         border: none;
