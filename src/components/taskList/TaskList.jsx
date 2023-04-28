@@ -1,4 +1,4 @@
-import TaskItem from '../taskItem/TaskItem';
+import TaskItem from '../taskItem/';
 import './taskList.css';
 
 const TaskList = ({
