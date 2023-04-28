@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Button from '../button/Button';
+import Button from '../Button';
 import { AiOutlinePlus } from 'react-icons/ai';
 import './taskForm.css';
 

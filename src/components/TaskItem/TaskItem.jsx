@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Button from '../button/Button';
+import Button from '../Button';
 import { AiOutlineCheck } from 'react-icons/ai';
 import { BsTrash } from 'react-icons/bs';
 import { AiOutlineEdit } from 'react-icons/ai';

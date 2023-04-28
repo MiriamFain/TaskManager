@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import './App.css';
-import TaskForm from './components/TaskForm/TaskForm';
-import TaskList from './components/TaskList/TaskList';
-import Header from './components/header/Header';
-import Notification from './components/PopUp/PopUp';
+import TaskForm from './components/TaskForm';
+import TaskList from './components/TaskList';
+import Header from './components/Header';
+import Notification from './components/PopUp';
 import {
     getTasks,
     createTask,
