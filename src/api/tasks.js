@@ -18,6 +18,10 @@ const getTrashedTasks = (page, perPage) => {
     return api.get(`/tasks/trashed?page=${page}&per_page=${perPage}`);
 };
 
+const updateTask = (taskId, data) => {
+    return api.put(`/tasks/${taskId}`, data);
+};
+
 const createTask = taskData => {
     return api.post('/tasks', taskData);
 };
@@ -58,6 +62,7 @@ export {
     getTasks,
     getCompletedTasks,
     getTrashedTasks,
+    updateTask,
     createTask,
     deleteTask,
     markTaskAsUrgent,

@@ -1,13 +1,14 @@
-import react, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import TaskForm from './components/taskForm/TaskForm';
 import TaskList from './components/taskList/TaskList';
 import Header from './components/header/Header';
-import Notification from './components/Notification';
+import Notification from './components/PopUp/PopUp';
 import {
     getTasks,
     createTask,
     deleteTask,
+    updateTask,
     markTaskAsImportant,
     unmarkTaskAsImportant,
     markTaskAsUrgent,
@@ -21,20 +22,49 @@ function App() {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const [message, setMessage] = useState('');
+    const [timerId, setTimerId] = useState(null);
+
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+
     const fetchTasks = useCallback(async () => {
         try {
-            const response = await getTasks(1, 25);
-            setTasks(response.data.data);
+            setLoading(true);
+            const {
+                data: { data, total, per_page },
+            } = await getTasks(page, 15);
+            const totalPages = Math.ceil(Number(total) / Number(per_page));
+            setTasks(prevTasks => {
+                //checks if last item in tasks array === last item of array that we got to prevent of adding the same data
+                const shouldUpdate =
+                    prevTasks.length === 0 ||
+                    (data.length > 0 &&
+                        data[data.length - 1]?.id !==
+                            prevTasks[prevTasks.length - 1]?.id);
+
+                return shouldUpdate ? [...prevTasks, ...data] : prevTasks;
+            });
+
+            setTotalPages(totalPages);
             setLoading(false);
         } catch (err) {
             setError(err);
             setLoading(false);
         }
-    }, []);
+    }, [page]);
 
     useEffect(() => {
         fetchTasks();
-    }, [fetchTasks]);
+    }, [fetchTasks, page]);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error.message}</div>;
+    }
 
     const handleMarkImportant = async (taskId, isImportant) => {
         if (isImportant) {
@@ -66,31 +96,56 @@ function App() {
 
     const handleMarkComplete = async (taskId, isComplete) => {
         if (isComplete) {
+            setMessage('Task completed');
             await markTaskAsCompleted(taskId);
         } else {
             await unmarkTaskAsCompleted(taskId);
         }
-        const completed_at = isComplete ? Date.now() : null;
-        const updTasks = tasks.map(task =>
-            task.id === taskId ? { ...task, completed_at } : task,
-        );
-        setTasks(updTasks);
 
-        fetchTasks();
+        setTimerId(
+            setTimeout(
+                async () => {
+                    const completed_at = isComplete ? Date.now() : null;
+                    const updTasks = tasks.map(task =>
+                        task.id === taskId ? { ...task, completed_at } : task,
+                    );
+                    setTasks(updTasks);
+                    setMessage('');
+                    fetchTasks();
+                },
+                isComplete ? 4000 : 0,
+            ),
+        );
     };
 
     const handleDelete = async taskId => {
-        await deleteTask(taskId);
-        const updTasks = tasks.filter(({ id }) => id !== taskId);
-        setTasks(updTasks);
+        setMessage('Task deleted');
 
-        fetchTasks();
+        setTimerId(
+            setTimeout(async () => {
+                await deleteTask(taskId);
+                const updTasks = tasks.filter(({ id }) => id !== taskId);
+                setTasks(updTasks);
+                setMessage('');
+                fetchTasks();
+            }, 4000),
+        );
     };
 
-    const handleEdit = async taskId => {};
+    const clearTimeoutId = () => {
+        clearTimeout(timerId);
+        setMessage('');
+    };
+
+    const handleEdit = async (taskId, description) => {
+        await updateTask(taskId, { description });
+        const updTasks = tasks.map(task =>
+            task.id === taskId ? { ...task, description } : task,
+        );
+        setTasks(updTasks);
+    };
 
     const handleAddTask = async description => {
-        console.log(description);
         const taskData = {
             description,
             created_at: new Date().toISOString(),
@@ -103,13 +158,19 @@ function App() {
             return updatedTasks;
         });
     };
+    const handleLoadMore = () => {
+        setPage(prevPage => prevPage + 1);
+    };
 
     return (
         <>
             <Header />
             <main>
                 <div className="g-row">
-                    <Notification />
+                    {message && (
+                        <Notification text={message} onClick={clearTimeoutId} />
+                    )}
+
                     <TaskForm onAddTask={handleAddTask} />
                     <TaskList
                         tasks={tasks}
@@ -118,7 +179,15 @@ function App() {
                         handleDelete={handleDelete}
                         handleMarkComplete={handleMarkComplete}
                         handleEdit={handleEdit}
+                        page={page}
                     />
+                    {page < totalPages && (
+                        // <div className="wrapper-btn">
+                        <button className="load_more" onClick={handleLoadMore}>
+                            Load More
+                        </button>
+                        // </div>
+                    )}
                 </div>
             </main>
         </>
